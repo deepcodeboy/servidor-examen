@@ -22,7 +22,7 @@ CtrlUser.getUsers = async (req, res) => {
 
 
 //GET USUARIO ID
-CtrlUser.getUsersID = async (req, res) => {
+CtrlUser.getUserID = async (req, res) => {
     try {
         const UserID = req.params.idUser;
         const User = await modelUser.findOne({$and: [{"_id":UserID},{isActive:true}]});
@@ -40,8 +40,8 @@ CtrlUser.getUsersID = async (req, res) => {
 }
 
 
-//CREATE USUARIO
-CtrlUser.postUsers = async (req, res) => {
+//POST USUARIO
+CtrlUser.postUser = async (req, res) => {
     try {
         const {username, password, email} = req.body;
 
@@ -111,7 +111,7 @@ CtrlUser.deleteUser = async (req, res) => {
             return res.status(404).json({message: 'El usuario ya no existe'});
         }
         await user.updateOne({isActive: false})
-        return res.status(200).json({message: 'Usuario eliminado correcte'});
+        return res.status(200).json({message: 'Usuario eliminado correctamente'});
 
 } catch (error) {
     return res.status(500).json({message: 'Error interno del servidor'});

@@ -22,6 +22,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 //RUTAS
+app.use(require("./src/routes/user.routes"))
 
 
 //SERVIDOR EN ESCUCHA
