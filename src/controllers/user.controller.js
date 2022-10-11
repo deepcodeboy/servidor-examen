@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 const CtrlUser = {};
 
 
-//GET USUARIOS ACTIVOS
+//GET, TODOS LOS USUARIOS ACTIVOS
 CtrlUser.getUsers = async (req, res) => {
     try {
         const Users = await modelUser.find({isActive: true});
@@ -21,7 +21,7 @@ CtrlUser.getUsers = async (req, res) => {
 }
 
 
-//GET USUARIO ID
+//GET, UN USUARIO POR ID
 CtrlUser.getUserID = async (req, res) => {
     try {
         const UserID = req.params.idUser;
@@ -40,7 +40,7 @@ CtrlUser.getUserID = async (req, res) => {
 }
 
 
-//POST USUARIO
+//POST, CREAR USUARIO
 CtrlUser.postUser = async (req, res) => {
     try {
         const {username, password, email} = req.body;
@@ -67,7 +67,7 @@ CtrlUser.postUser = async (req, res) => {
     }
 }
 
-//UPDATE USUARIO
+//UPDATE, ACTUALIZAR USUARIO
 CtrlUser.putUser = async (req, res) => {
     try {
         const idUser = req.params.idUser;
@@ -100,7 +100,7 @@ CtrlUser.putUser = async (req, res) => {
 }
 
 
-//DELETE USUARIO
+//DELETE, ELIMINAR USUARIO
 CtrlUser.deleteUser = async (req, res) => {
     try {
 

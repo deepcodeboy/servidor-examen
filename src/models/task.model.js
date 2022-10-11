@@ -1,7 +1,7 @@
 const {model, Schema} = require('mongoose');
 require('../models/user.model');
 
-const taskModel = new Schema({
+const modelTask = new Schema({
     title:{
         type: 'string',
         max: 100,
@@ -34,4 +34,4 @@ const taskModel = new Schema({
 
 );
 
-module.exports = model("Tasks", taskModel)
+module.exports = model("Tasks", modelTask)
