@@ -14,7 +14,7 @@ dbConnect();
 const app = express()
 
 //CONFIGURACIONES
-const port = process.env.PORT || 4000;
+const port = process.env.PORT;
 
 //MIDDLEWARES
 app.use(cors());
@@ -22,6 +22,7 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 //RUTAS
+app.use(require("./src/routes/user.routes"))
 
 
 //SERVIDOR EN ESCUCHA
