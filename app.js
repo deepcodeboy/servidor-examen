@@ -14,7 +14,7 @@ dbConnect();
 const app = express()
 
 //CONFIGURACIONES
-const port = process.env.PORT || 4000;
+const port = process.env.PORT;
 
 //MIDDLEWARES
 app.use(cors());
