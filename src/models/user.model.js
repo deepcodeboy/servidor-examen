@@ -20,9 +20,9 @@ const modelUser = new Schema({
         type:Boolean,
         default:true
     },
-    isAdmin: {
-        type:Boolean,
-        default:false
+    rol: {
+        type:String,
+        default:'normal'
     }
     
 }, {

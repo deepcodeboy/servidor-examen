@@ -2,7 +2,7 @@
 const modelTask = require('../models/task.model');
 const modelUser = require('../models/user.model');
 
-
+const CtrlTask = {}
 //GET, TODAS LAS TAREAS
 CtrlTask.getTask = async (req, res) => {
     try {
@@ -66,7 +66,7 @@ CtrlTask.postTask = async (req, res) => {
         }
 
         //COMPROBACION DE ADMIN
-        if (!((idUser == require.user._id) || require.user.role === 'admin')) {
+        if (!((idUser == req.user._id) || req.user.role === 'admin')) {
             return res.status(400).json({
                 message: "Usuario no autorizado para asignar a la tarea"
             })
@@ -121,7 +121,7 @@ CtrlTask.putTask = async (req, res) => {
         const userIdString = userID.toString();
         const tareaIdString = Task.idUser.toString();
 
-        if ((userIdString!== tareaIdString) || require.user.role === 'admin') {
+        if ((userIdString!== tareaIdString) || req.user.role === 'admin') {
             await Task.updateOne({title, description, status});
             return res.status(200).json({
                 message: 'Tarea actualizada exitosamente'
