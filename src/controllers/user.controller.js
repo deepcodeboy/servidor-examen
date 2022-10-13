@@ -27,7 +27,13 @@ CtrlUser.getUserID = async (req, res) => {
         const UserID = req.params.idUser;
         const User = await modelUser.findOne({$and: [{"_id":UserID},{isActive:true}]});
         
-        /* if (idUser != req.user._id || req.user.rol != 'admin') {
+        if (!User) {
+           return res.status(404).json({
+               message: 'Usuario no encontrado',
+           });
+       }
+
+        if (!(UserID == req.user._id || req.user.rol === 'admin')) {
             return res.status(401).json({
                 message: 'Usuario sin derechos de administrador'
             })
@@ -35,18 +41,14 @@ CtrlUser.getUserID = async (req, res) => {
 
         return res.json({
             message: 'Usuario encontrado',
-       }); */
-         if (User) {
-            return res.json({
-                message: 'Usuario encontrado',
-                User
-            });
-        }
-
- 
+            User
+       });
 
     } catch(error) {
-        return res.status(404).json({message: 'No se encontro el usuario'})  
+        return res.status(500).json({
+            message: 'Error interno del servidor al encontrar usuario',
+            error: error.message
+        })  
     }
 }
 
@@ -81,7 +83,7 @@ CtrlUser.postUser = async (req, res) => {
 //UPDATE, ACTUALIZAR USUARIO
 CtrlUser.putUser = async (req, res) => {
     try {
-        const idUser = req.params.idUser;
+        const idUser = req.user._id;
         const {password, email} = req.body;
 
         if (!idUser || !password || !email) {
@@ -96,14 +98,13 @@ CtrlUser.putUser = async (req, res) => {
         }
 
         const User = await modelUser.findOne({$and:[{_id: idUser}, {isActive: true}]});
-
-        if (User) {
-            const newPassword = bcrypt.hashSync(password,10);
-            await User.updateOne({password:newPassword, email});
-            return res.status(200).json({message: 'Usuario actualizado correctamente'});
-        } else {
+        if (!User) {
             return res.status(404).json({message: 'Usuario no encontrado'});
         }
+
+        const newPassword = bcrypt.hashSync(password,10);
+        await User.updateOne({password:newPassword, email});
+        return res.status(200).json({message: 'Usuario actualizado correctamente'});
 
 } catch (error) {
     return res.status(500).json({message: 'Error al actualizar usuario'});
@@ -115,7 +116,7 @@ CtrlUser.putUser = async (req, res) => {
 CtrlUser.deleteUser = async (req, res) => {
     try {
 
-        const idUser = req.params.idUser;
+        const idUser = req.user._id;
         const user = await modelUser.findOne({$and:[{_id: idUser},{isActive: true}]});
 
         if (!user){

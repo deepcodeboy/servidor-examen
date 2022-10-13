@@ -3,6 +3,8 @@ const modelTask = require('../models/task.model');
 const modelUser = require('../models/user.model');
 
 const CtrlTask = {}
+
+
 //GET, TODAS LAS TAREAS
 CtrlTask.getTask = async (req, res) => {
     try {
@@ -26,8 +28,8 @@ CtrlTask.getTask = async (req, res) => {
 //GET, UNA TAREA POR ID
 CtrlTask.getTaskIDUser = async (req, res) => {
     try {
-        const idUser = req.params.idUser;
-        const tasks = await modelTask.find({idUser})
+        const idUser = req.user._id;
+        const tasks = await modelTask.find({$and:[{idUser},{isActive: true}]})
         .populate('idUser', ['username', 'email'])
 
         if (!tasks.length){
@@ -35,6 +37,13 @@ CtrlTask.getTaskIDUser = async (req, res) => {
                 message: "No se encontraron tareas con ese usuario"
             });
         }
+
+        return res.json({
+            message:`Mis tareas encontradas:${tasks.length}`,
+            tasks
+        });
+
+
     } catch (error) {
         return res.status(500).json({
             message: "No se encontraron tareas",
@@ -81,7 +90,7 @@ CtrlTask.postTask = async (req, res) => {
         });
 
         //GUARDAR TAREA
-        const tareaRegistrada = await newTask.save();
+        const tareaRegistrada = await (await newTask.save()).populate("idUser", ["username", "email"]);
         return res.status(200).json({
             message: 'Tarea registrada exitosamente',
             tareaRegistrada
@@ -99,7 +108,6 @@ CtrlTask.postTask = async (req, res) => {
 //PUT, ACTUALIZAR TAREA
 CtrlTask.putTask = async (req, res) => {
     try {
-
         const idTask = req.params.idTask;
         const userID = req.user._id;
         const {title, description} = req.body;
@@ -121,17 +129,17 @@ CtrlTask.putTask = async (req, res) => {
         const userIdString = userID.toString();
         const tareaIdString = Task.idUser.toString();
 
-        if ((userIdString === tareaIdString) || req.user.rol === 'admin') {
-            await Task.updateOne({title, description});
-            return res.status(200).json({
-                message: 'Tarea actualizada exitosamente'
+        if (!((userIdString === tareaIdString) || req.user.rol === 'admin')) {
+            return res.status(400).json({
+                message: 'Usuario sin permisos de administrador'
             })
         }
-
-        return res.status(400).json({
-            message: 'Usuario sin permisos de administrador'
+        
+        await Task.updateOne({title, description});
+        return res.status(200).json({
+            message: 'Tarea actualizada exitosamente'
         })
-
+        
     } catch (error) {
         return res.status(500).json({
             message: "Error del servidor al actualizar la tarea",
@@ -140,6 +148,53 @@ CtrlTask.putTask = async (req, res) => {
     }
 };
 
+
+//COMPLETAR TAREA
+CtrlTask.completeTask = async (req, res) => {
+    try {
+        const idTask = req.params.idTask;
+        const userID = req.user._id;
+
+        if (!idTask) {
+            return res.status(400).json({
+                message: "ID requerida no recibida",
+            });
+        }
+
+        const Task = await modelTask.findById(idTask);
+        if (!Task || !Task.isActive) {
+            return res.status(400).json({
+                message: "Tarea no encontradas"
+            })
+        }
+
+        const userIdString = userID.toString();
+        const tareaIdString = Task.idUser.toString();
+
+        if (Task.isComplete) {
+            return res.json({
+                message: "Su tarea ya está completada"
+            })
+        }
+
+        if (!((userIdString === tareaIdString) || req.user.rol === 'admin')) {
+            return res.status(400).json({
+                message: 'Usuario sin permisos de administrador'
+            })
+        }
+        
+        await Task.updateOne({isComplete: true});
+        return res.status(201).json({
+            message: 'Tarea completada'
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error del servidor al intentar completar la tarea",
+            errorBody: error.message
+        });
+    }
+};
 
 //DELETE, ELIMINAR UNA TAREA    
 CtrlTask.deleteTask = async (req, res) => {
