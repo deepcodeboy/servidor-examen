@@ -20,9 +20,9 @@ router.get('/user/:idUser',[validateJWT], getUserID);
 router.post('/user', postUser);
 
 //ACTUALIZAR UN USUARIO
-router.put('/user/:idUser',[validateJWT], putUser);
+router.put('/user',[validateJWT], putUser);
 
 //ELIMINAR UN USUARIO
-router.delete('/user/:idUser',[validateJWT], deleteUser);
+router.delete('/user',[validateJWT], deleteUser);
 
 module.exports = router;
