@@ -77,7 +77,6 @@ CtrlTask.postTask = async (req, res) => {
         const newTask = new modelTask({
             title,
             description,
-            isComplete,
             idUser,
         });
 
