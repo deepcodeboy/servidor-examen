@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 const CtrlUser = {};
 
 
-//GET USUARIOS ACTIVOS
+//GET, TODOS LOS USUARIOS ACTIVOS
 CtrlUser.getUsers = async (req, res) => {
     try {
         const Users = await modelUser.find({isActive: true});
@@ -21,18 +21,29 @@ CtrlUser.getUsers = async (req, res) => {
 }
 
 
-//GET USUARIO ID
+//GET, UN USUARIO POR ID
 CtrlUser.getUserID = async (req, res) => {
     try {
         const UserID = req.params.idUser;
         const User = await modelUser.findOne({$and: [{"_id":UserID},{isActive:true}]});
+        
+        /* if (idUser != req.user._id || req.user.rol != 'admin') {
+            return res.status(401).json({
+                message: 'Usuario sin derechos de administrador'
+            })
+        }
 
-        if (User) {
+        return res.json({
+            message: 'Usuario encontrado',
+       }); */
+         if (User) {
             return res.json({
                 message: 'Usuario encontrado',
                 User
             });
-        }error
+        }
+
+ 
 
     } catch(error) {
         return res.status(404).json({message: 'No se encontro el usuario'})  
@@ -40,7 +51,7 @@ CtrlUser.getUserID = async (req, res) => {
 }
 
 
-//POST USUARIO
+//POST, CREAR USUARIO
 CtrlUser.postUser = async (req, res) => {
     try {
         const {username, password, email} = req.body;
@@ -67,7 +78,7 @@ CtrlUser.postUser = async (req, res) => {
     }
 }
 
-//UPDATE USUARIO
+//UPDATE, ACTUALIZAR USUARIO
 CtrlUser.putUser = async (req, res) => {
     try {
         const idUser = req.params.idUser;
@@ -100,7 +111,7 @@ CtrlUser.putUser = async (req, res) => {
 }
 
 
-//DELETE USUARIO
+//DELETE, ELIMINAR USUARIO
 CtrlUser.deleteUser = async (req, res) => {
     try {
 

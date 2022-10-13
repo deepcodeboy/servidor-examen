@@ -22,8 +22,10 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 //RUTAS
-app.use(require("./src/routes/user.routes"))
 
+app.use(require("./src/routes/user.routes"))
+app.use(require("./src/routes/auth.routes"))
+app.use(require("./src/routes/task.routes"))
 
 //SERVIDOR EN ESCUCHA
 app.listen(port, console.log(`Servidor iniciado en http://localhost:${port}`));
