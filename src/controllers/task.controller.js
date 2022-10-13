@@ -47,7 +47,8 @@ CtrlTask.getTaskIDUser = async (req, res) => {
 //POST, CREAR UNA TAREA
 CtrlTask.postTask = async (req, res) => {
     try {
-        const {idUser, title, description, status} = req.body;
+        const idUser = req.user._id
+        const {title, description} = req.body;
 
         if (!idUser || !title || !description) {
             return res.status(400).json({
@@ -76,7 +77,7 @@ CtrlTask.postTask = async (req, res) => {
         const newTask = new modelTask({
             title,
             description,
-            status,
+            isComplete,
             idUser,
         });
 
@@ -101,8 +102,8 @@ CtrlTask.putTask = async (req, res) => {
     try {
 
         const idTask = req.params.idTask;
-        const userID = req.params._id;
-        const {title, description, status} = req.body;
+        const userID = req.user._id;
+        const {title, description} = req.body;
 
         if (!idTask || !title || !description) {
             return res.status(400).json({
@@ -111,7 +112,7 @@ CtrlTask.putTask = async (req, res) => {
             });
         }
 
-        const Task = await modelTask.findById({idTask});
+        const Task = await modelTask.findById(idTask);
         if (!Task || !Task.isActive) {
             return res.status(400).json({
                 message: "Tarea no encontradas"
@@ -121,8 +122,8 @@ CtrlTask.putTask = async (req, res) => {
         const userIdString = userID.toString();
         const tareaIdString = Task.idUser.toString();
 
-        if ((userIdString!== tareaIdString) || req.user.role === 'admin') {
-            await Task.updateOne({title, description, status});
+        if ((userIdString === tareaIdString) || req.user.rol === 'admin') {
+            await Task.updateOne({title, description});
             return res.status(200).json({
                 message: 'Tarea actualizada exitosamente'
             })

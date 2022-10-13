@@ -26,13 +26,24 @@ CtrlUser.getUserID = async (req, res) => {
     try {
         const UserID = req.params.idUser;
         const User = await modelUser.findOne({$and: [{"_id":UserID},{isActive:true}]});
+        
+        /* if (idUser != req.user._id || req.user.rol != 'admin') {
+            return res.status(401).json({
+                message: 'Usuario sin derechos de administrador'
+            })
+        }
 
-        if (User) {
+        return res.json({
+            message: 'Usuario encontrado',
+       }); */
+         if (User) {
             return res.json({
                 message: 'Usuario encontrado',
                 User
             });
-        }error
+        }
+
+ 
 
     } catch(error) {
         return res.status(404).json({message: 'No se encontro el usuario'})  

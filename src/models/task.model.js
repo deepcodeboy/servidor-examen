@@ -12,13 +12,12 @@ const modelTask = new Schema({
         max: 255,
         required: true
     },
-    status:{
-        type:'string',
-        enum:['pending', ' in progress', 'complete', 'uncompleted'],
-        default: 'pending'
+    isComplete:{
+        type: Boolean,
+        default: false
     },
     isActive:{
-        type: 'boolean',
+        type: Boolean,
         default: true
     },
     idUser:{
