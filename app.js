@@ -4,11 +4,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 require("dotenv").config()
 
-
 //CONEXION A LA BASE DE DATOS
 const dbConnect = require('./src/db/connection')
 dbConnect();
-
 
 //INICIALIZACION DE EXPRESS
 const app = express()
@@ -22,7 +20,6 @@ app.use(morgan('tiny'));
 app.use(express.json());
 
 //RUTAS
-
 app.use(require("./src/routes/user.routes"))
 app.use(require("./src/routes/auth.routes"))
 app.use(require("./src/routes/task.routes"))

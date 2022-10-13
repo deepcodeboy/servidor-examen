@@ -1,4 +1,6 @@
+//IMPORTACION DE LIBRERIA
 const jwt = require('jsonwebtoken');
+
 //GENERADOR DEL JWT
 const generateJWT = (userID) => {
     return new Promise((resolve, reject) =>{
@@ -11,7 +13,6 @@ const generateJWT = (userID) => {
             }
             resolve(token)
         })
-        
     })
 }
 

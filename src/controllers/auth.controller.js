@@ -1,6 +1,7 @@
-//TODO:Importado el modelo de usuario
+//IMPORTACION DEL MODELO DE USUARIO
 const User = require('../models/user.model');
-//TODO:Importado dependencias
+
+//IMPORTACION DE DEPENDENCIAS 
 const generarJWT = require('../helper/generador-jwt');
 const bcrypt = require('bcrypt');
 const CtrlAuth = {};
@@ -9,34 +10,39 @@ CtrlAuth.login = async (req, res, next) => {
     try {
         const {username, password} = req.body;
         const USER = await User.findOne({username});
+
+        //VERIFICAR USUARIO
         if (!USER) {
             return res.status(400).json({
                     ok:false,
-                    message:"Error al autenticase - Usuario no encontrado"
+                    message:"Usuario no encontrado"
             });
-        };//TODO:En caso de que no encuentre el usuario
+        };
+
+        //VERIFICAR USUARIO ACTIVO
         if(!USER.isActive) {
             return res.status(400).json({
                     ok:false,
-                    message:"Error al autenticarse - Usuario inactivo"
+                    message:"Usuario inactivo"
             });
-        };//TODO:En caso de que encuentre el usuario y su estado esté en false
-        // Verify the password
+        };
+        
+        //VALIDAR PASSWORD
         const validPassword = bcrypt.compareSync(password, USER.password);
         if(!validPassword) {
             return res.status(400).json({
                 ok:false,
                 message:"Error al comprobar - Contraseña Incorrecta"
             });
-        };//TODO:En caso de que la contraseña no coincida
-        // Generate a JWT
+        };
+
+        //GENERAR JWT
         const token = await generarJWT(USER._id);
-        
-        return res.json({token});//TODO:Retorno exitoso del token
+        return res.json({token});
         
     } catch (error) {
-        return res.status(500).json({message:'Error al iniciar sesión',error: error.message || error });//TODO:Error cuando no pudo iniciar la sesión porque no pudo crearse el token
-    }
+        return res.status(500).json({message:'Error al iniciar sesión',error: error.message || error });
+    } //FALLO AL CREAR TOKEN
 }
 
 module.exports = CtrlAuth;

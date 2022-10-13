@@ -11,10 +11,13 @@ const CtrlUser = {};
 CtrlUser.getUsers = async (req, res) => {
     try {
         const Users = await modelUser.find({isActive: true});
+
+        //OBTENER USUARIOS
         return res.json({
             message: `Usuarios encontrados ${Users.length}`,
             Users
         })
+
     } catch (error) {
         return res.status(404).json({message: 'No se encontraron los usuarios', error:error.message}) 
     } 
@@ -27,18 +30,21 @@ CtrlUser.getUserID = async (req, res) => {
         const UserID = req.params.idUser;
         const User = await modelUser.findOne({$and: [{"_id":UserID},{isActive:true}]});
         
+        //VERIFICAR USUARIO
         if (!User) {
            return res.status(404).json({
                message: 'Usuario no encontrado',
            });
        }
 
+       //VERIFICACION PERMISOS
         if (!(UserID == req.user._id || req.user.rol === 'admin')) {
             return res.status(401).json({
                 message: 'Usuario sin derechos de administrador'
             })
         }
 
+        //OBTENER USUARIO
         return res.json({
             message: 'Usuario encontrado',
             User
@@ -58,20 +64,24 @@ CtrlUser.postUser = async (req, res) => {
     try {
         const {username, password, email} = req.body;
 
+        //VERIFICACION REQUISITOS
         if (username.length < 6 && password.length < 8) {
-            return res.status(400).json({message:"El usuario o la contraseña no cumplen el requisito minimo"
+            return res.status(400).json({
+                message:"El usuario o la contraseña no cumplen el requisito minimo"
             })
         }
 
         //ENCRIPTADO
         const newPassword = bcrypt.hashSync(password, 10);
 
+        //USUARIO NUEVO
         const newUser = new modelUser({
             username,
             password: newPassword,
             email
         });
 
+        //GUARDADO
         await newUser.save();
         return res.status(200).json({message: 'Usuario guardado correctamente'});
 
@@ -86,6 +96,7 @@ CtrlUser.putUser = async (req, res) => {
         const idUser = req.user._id;
         const {password, email} = req.body;
 
+        //VERIFICACION DE CAMPOS
         if (!idUser || !password || !email) {
             return res.status(400).json({
                 message: 'Falta completar campos',
@@ -93,16 +104,22 @@ CtrlUser.putUser = async (req, res) => {
         });
         }
 
+        //VERIFICAR RANGO DE CONTRASEÑA
         if (password.length <8) {
-            return res.status(400).json({message: 'La contraseña debe ser mayor o igual a 8 caracteres'});
+            return res.status(400).json({
+                message: 'La contraseña debe ser mayor o igual a 8 caracteres'});
         }
 
         const User = await modelUser.findOne({$and:[{_id: idUser}, {isActive: true}]});
+
+        //VERIFICAR USUARIO
         if (!User) {
             return res.status(404).json({message: 'Usuario no encontrado'});
         }
 
         const newPassword = bcrypt.hashSync(password,10);
+
+        //ACTUALIZAR
         await User.updateOne({password:newPassword, email});
         return res.status(200).json({message: 'Usuario actualizado correctamente'});
 
@@ -115,13 +132,15 @@ CtrlUser.putUser = async (req, res) => {
 //DELETE, ELIMINAR USUARIO
 CtrlUser.deleteUser = async (req, res) => {
     try {
-
         const idUser = req.user._id;
         const user = await modelUser.findOne({$and:[{_id: idUser},{isActive: true}]});
 
+        //VERIFICAR USUARIO
         if (!user){
             return res.status(404).json({message: 'El usuario ya no existe'});
         }
+
+        //ELIMINAR USUARIO
         await user.updateOne({isActive: false})
         return res.status(200).json({message: 'Usuario eliminado correctamente'});
 

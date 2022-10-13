@@ -1,5 +1,7 @@
+//IMPORTACION DE LIBRERIA
 const mongoose = require("mongoose");
 
+//CONEXION A BASE DE DATOS
 const dbConnect = async () => {
     try {
         await mongoose.connect(process.env.MONGODB_URI);

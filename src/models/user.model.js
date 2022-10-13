@@ -1,3 +1,4 @@
+//MODELO USUARIO
 const { model, Schema } = require('mongoose');
 
 const modelUser = new Schema({

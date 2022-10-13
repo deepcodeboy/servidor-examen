@@ -11,6 +11,7 @@ CtrlTask.getTask = async (req, res) => {
         const tasks = await modelTask.find({isActive: true})
         .populate('idUser', ['username', 'email']);
         
+        //TAREAS ENCONTRADAS
         return res.json({
             message:`Tareas encontradas:${tasks.length}`,
             tasks
@@ -32,12 +33,14 @@ CtrlTask.getTaskIDUser = async (req, res) => {
         const tasks = await modelTask.find({$and:[{idUser},{isActive: true}]})
         .populate('idUser', ['username', 'email'])
 
+        //VERIFICAR QUE HAYA TAREAS
         if (!tasks.length){
             return res.status(404).json({
                 message: "No se encontraron tareas con ese usuario"
             });
         }
 
+        //TAREA ENCONTRADA
         return res.json({
             message:`Mis tareas encontradas:${tasks.length}`,
             tasks
@@ -59,6 +62,7 @@ CtrlTask.postTask = async (req, res) => {
         const idUser = req.user._id
         const {title, description} = req.body;
 
+        //VERIFICAR QUE LA INFORMACION ESTE COMPLETA
         if (!idUser || !title || !description) {
             return res.status(400).json({
                 message: "Informacion incompleta o inadecuada",
@@ -112,6 +116,7 @@ CtrlTask.putTask = async (req, res) => {
         const userID = req.user._id;
         const {title, description} = req.body;
 
+        //VERIFICAR INFORMACION COMPLETA
         if (!idTask || !title || !description) {
             return res.status(400).json({
                 message: "ID o informacion requerida no recibida ",
@@ -120,6 +125,8 @@ CtrlTask.putTask = async (req, res) => {
         }
 
         const Task = await modelTask.findById(idTask);
+
+        //VERIFICAR ACTIVIDAD DE TAREA
         if (!Task || !Task.isActive) {
             return res.status(400).json({
                 message: "Tarea no encontradas"
@@ -129,12 +136,14 @@ CtrlTask.putTask = async (req, res) => {
         const userIdString = userID.toString();
         const tareaIdString = Task.idUser.toString();
 
+        //VERIFICAR PERMISOS
         if (!((userIdString === tareaIdString) || req.user.rol === 'admin')) {
             return res.status(400).json({
                 message: 'Usuario sin permisos de administrador'
             })
         }
         
+        //ACTUALIZACION DE TAREA
         await Task.updateOne({title, description});
         return res.status(200).json({
             message: 'Tarea actualizada exitosamente'
@@ -155,6 +164,7 @@ CtrlTask.completeTask = async (req, res) => {
         const idTask = req.params.idTask;
         const userID = req.user._id;
 
+        //VERIFICACION ID TAREA
         if (!idTask) {
             return res.status(400).json({
                 message: "ID requerida no recibida",
@@ -162,6 +172,8 @@ CtrlTask.completeTask = async (req, res) => {
         }
 
         const Task = await modelTask.findById(idTask);
+
+        //VERIFICACION DE TAREAS
         if (!Task || !Task.isActive) {
             return res.status(400).json({
                 message: "Tarea no encontradas"
@@ -171,18 +183,21 @@ CtrlTask.completeTask = async (req, res) => {
         const userIdString = userID.toString();
         const tareaIdString = Task.idUser.toString();
 
+        //VERIFICACION DE TAREA COMPLETA
         if (Task.isComplete) {
             return res.json({
                 message: "Su tarea ya está completada"
             })
         }
 
+        //VERIFICACION DE PERMISOS
         if (!((userIdString === tareaIdString) || req.user.rol === 'admin')) {
             return res.status(400).json({
                 message: 'Usuario sin permisos de administrador'
             })
         }
         
+        //COMPLETAR TAREA
         await Task.updateOne({isComplete: true});
         return res.status(201).json({
             message: 'Tarea completada'
@@ -201,23 +216,26 @@ CtrlTask.deleteTask = async (req, res) => {
     try {
         const idTask = req.params.idTask;
         const userID = req.user._id;
-
         const Task = await modelTask.findOne({$and:[{_id:idTask},{isActive:true}]})
 
+        //VERIFICACION DE TAREA
         if(!Task || !Task.isActive){
             return res.status(404).json({
                 message: 'La tarea no existe'
             });
         }
+
         const userIDString = userID.toString() 
         const tareaIDString = Task.idUser.toString()
 
+        //VERIFICACION DE PERMISOS
         if(!((userIDString === tareaIDString)|| req.user.role === 'admin')) {
             return res.status(401).json({
                 message: 'Usuario sin permisos para eliminar la tarea'
             })
         }
 
+        //ELIMINAR TAREA
         await Task.updateOne({isActive:false});
         return res.status(201).json({
             message: 'Tarea eliminada exitosamente',

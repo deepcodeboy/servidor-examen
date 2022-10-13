@@ -1,14 +1,16 @@
-//TODO:Importado Desestructurado de los metodos del Auth y dependencias
+//IMPORTACION CONTROLADOR DE AUTH Y DEPENDENCIA
 const {login} = require('../controllers/auth.controller');
 const router = require('express').Router();
 
-//TODO:ruta Get respuesta definida
+//RUTA GET DE LOGIN
 router.get('/login', (req, res) => {
     return res.json({
         message:"Ingrese su usuario y contraseña"
     })
 })
-//TODO:Proceso para Logear el usuario
+
+//PROCESO PARA LOGUEAR
 router.post('/login',login);
 
+//EXPORTACION DE RUTA DE LOGIN
 module.exports = router;

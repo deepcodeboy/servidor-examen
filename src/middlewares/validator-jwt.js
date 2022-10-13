@@ -1,30 +1,36 @@
+//IMPORTACION DE MODELO DE USUARIO Y LIBRERIA
 const modelUser = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 
+//VALIDAR TOKEN
 const validarJWT = async (req, res, next) => {
     let token = req.headers.authorization;
 
+    //VERIFICAR TOKEN
     if(!token){
         return res.status(401).json({
-            msg: 'Error de autenticación - no hay token en la petición'
+            msg: 'Error no existe token en la petición'
         })
     };
 
     try {
         const {userID} = await jwt.verify(token, process.env.FIRMADMIN);
         const Usuario = await modelUser.findById(userID);
+
+        //VERIFICAR USUARIO
         if(!Usuario) {
             return res.status(401).json({
-                error: 'Token no válido - usuario no existe en la DB'
+                error: 'Token o Usuario no existe'
             })
         };
+
+        //VERIFICAR USUARIO ACTIVO
         if (!Usuario.isActive) {
             return res.status(401).json({
-                message: 'Token no válido - usuario no está activo'
+                message: 'Token no válido o usuario no activo'
             })
         };
         req.user = Usuario;
-
         next();
     } catch (error) {
         console.log(error.message);

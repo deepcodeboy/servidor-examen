@@ -5,7 +5,6 @@ const isAdmin = (req, res, next) => {
             message: 'No autorizado - No eres administrador'
         })
     }
-
     next();
 }
 

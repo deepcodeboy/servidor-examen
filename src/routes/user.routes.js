@@ -1,3 +1,4 @@
+//IMPORTACION DE MIDDLEWARES Y DEPENDENCIAS
 const router = require('express').Router();
 const validateJWT = require('../middlewares/validator-jwt')
 const isAdmin = require('../middlewares/admin')
@@ -10,19 +11,20 @@ const {
     deleteUser,
 } = require('../controllers/user.controller');
 
-//OBTENER USUARIOS
+//RUTA DE OBTENER USUARIOS
 router.get('/users',[validateJWT,isAdmin], getUsers);
 
-//OBTENER UN USUARIO
+//RUTA DE OBTENER UN USUARIO
 router.get('/user/:idUser',[validateJWT], getUserID);
 
-//CREAR UN USUARIO
+//RUTA CREAR UN USUARIO
 router.post('/user', postUser);
 
-//ACTUALIZAR UN USUARIO
+//RUTA DE ACTUALIZAR UN USUARIO
 router.put('/user',[validateJWT], putUser);
 
-//ELIMINAR UN USUARIO
+//RUTA DE ELIMINAR UN USUARIO
 router.delete('/user',[validateJWT], deleteUser);
 
+//EXPORTACION DE RUTAS DE USUARIO
 module.exports = router;
